@@ -1,0 +1,232 @@
+
+---
+title: "Letters from noblewomen"
+author: "Laura, Amanda, Sarah, Cecilie"
+date: "2025-04-28"
+output: html_document
+---
+
+
+```{r}
+library(ggplot2)
+library(tidytext)
+library(dplyr)
+```
+
+
+#Bille
+
+```{r}
+# Load csv file
+bille <- read.csv2("C:\\Users\\amand\\Documents\\BA Historie\\Digitale metoder\\Final projekt\\data\\all-wordsbille-clustered.csv", row.names = NULL)
+
+# Load custom stopwords
+my_stops <- readLines("stoplist.txt")
+
+# Unnest tokens and remove custom stopwords
+bille_clean <- bille %>%
+  unnest_tokens(word, word) %>%
+  filter(!word %in% my_stops)
+
+# Count the frequency of each word
+word_count <- bille_clean %>%
+  count(word, sort = TRUE)
+
+# Get the top 20 most frequent words
+top_20_words <- word_count %>%
+  top_n(20, n)
+
+# Print the top 20 most frequent words
+print(top_20_words)
+
+# Create a bar plot of the top 20 words
+ggplot(top_20_words, aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  # Flip coordinates to make the graph horizontal
+  labs(title = "Top 20 Most Frequent Words Bille",
+       x = "Words",
+       y = "Frequency") +
+  theme_minimal() +  # Clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+#Hardenberg
+
+```{r}
+# Load csv file
+hardenberg <- read.csv2("C:\\Users\\amand\\Documents\\BA Historie\\Digitale metoder\\Final projekt\\data\\all-wordshardenberg-clustered.csv", row.names = NULL)
+
+# Load custom stopwords
+my_stops <- readLines("stoplist.txt")
+
+# Unnest tokens and remove custom stopwords
+hardenberg_clean <- hardenberg %>%
+  unnest_tokens(word, word) %>%
+  filter(!word %in% my_stops)
+
+# Count the frequency of each word
+word_count <- hardenberg_clean %>%
+  count(word, sort = TRUE)
+
+# Get the top 20 most frequent words
+top_20_words <- word_count %>%
+  top_n(20, n)
+
+# Print the top 20 most frequent words
+print(top_20_words)
+
+# Create a bar plot of the top 20 words
+ggplot(top_20_words, aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  # Flip coordinates to make the graph horizontal
+  labs(title = "Top 20 Most Frequent Words Hardenberg",
+       x = "Words",
+       y = "Frequency") +
+  theme_minimal() +  # Clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+#Gøye
+
+```{r}
+# Load csv file
+gøye <- read.csv2("C:\\Users\\amand\\Documents\\BA Historie\\Digitale metoder\\Final projekt\\data\\all-wordsgøye-clustered.csv", row.names = NULL)
+
+# Load custom stopwords
+my_stops <- readLines("stoplist.txt")
+
+# Unnest tokens and remove custom stopwords
+gøye_clean <- gøye %>%
+  unnest_tokens(word, word) %>%
+  filter(!word %in% my_stops)
+
+# Count the frequency of each word
+word_count <- gøye_clean %>%
+  count(word, sort = TRUE)
+
+# Get the top 20 most frequent words
+top_20_words <- word_count %>%
+  top_n(20, n)
+
+# Print the top 20 most frequent words
+print(top_20_words)
+
+# Create a bar plot of the top 20 words
+ggplot(top_20_words, aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  # Flip coordinates to make the graph horizontal
+  labs(title = "Top 20 Most Frequent Words Gøye",
+       x = "Words",
+       y = "Frequency") +
+  theme_minimal() +  # Clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+#Bølle
+
+```{r}
+# Load csv file
+bølle <- read.csv2("C:\\Users\\amand\\Documents\\BA Historie\\Digitale metoder\\Final projekt\\data\\all-wordsbølle-clustered.csv", row.names = NULL)
+
+# Load custom stopwords
+my_stops <- readLines("stoplist.txt")
+
+# Unnest tokens and remove custom stopwords
+bølle_clean <- bølle %>%
+  unnest_tokens(word, word) %>%
+  filter(!word %in% my_stops)
+
+# Count the frequency of each word
+word_count <- bølle_clean %>%
+  count(word, sort = TRUE)
+
+# Get the top 20 most frequent words
+top_20_words <- word_count %>%
+  top_n(20, n)
+
+# Print the top 20 most frequent words
+print(top_20_words)
+
+# Create a bar plot of the top 20 words
+ggplot(top_20_words, aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  # Flip coordinates to make the graph horizontal
+  labs(title = "Top 20 Most Frequent Words Bølle",
+       x = "Words",
+       y = "Frequency") +
+  theme_minimal() +  # Clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+#Oxe
+
+```{r}
+# Load csv file
+oxe <- read.csv2("C:\\Users\\amand\\Documents\\BA Historie\\Digitale metoder\\Final projekt\\data\\all-wordsoxe-clustered.csv", row.names = NULL)
+
+# Load custom stopwords
+my_stops <- readLines("stoplist.txt")
+
+# Unnest tokens and remove custom stopwords
+oxe_clean <- oxe %>%
+  unnest_tokens(word, word) %>%
+  filter(!word %in% my_stops)
+
+# Count the frequency of each word
+word_count <- oxe_clean %>%
+  count(word, sort = TRUE)
+
+# Get the top 20 most frequent words
+top_20_words <- word_count %>%
+  top_n(20, n)
+
+# Print the top 20 most frequent words
+print(top_20_words)
+
+# Create a bar plot of the top 20 words
+ggplot(top_20_words, aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  # Flip coordinates to make the graph horizontal
+  labs(title = "Top 20 Most Frequent Words Oxe",
+       x = "Words",
+       y = "Frequency") +
+  theme_minimal() +  # Clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+# Rosenkrantz
+
+```{r}
+# Load csv file
+rosenkrantz <- read.csv2("C:\\Users\\amand\\Documents\\BA Historie\\Digitale metoder\\Final projekt\\data\\all-wordsrosenkrantz-clustered.csv", row.names = NULL)
+
+# Load custom stopwords
+my_stops <- readLines("stoplist.txt")
+
+# Unnest tokens and remove custom stopwords
+rosenkrantz_clean <- rosenkrantz %>%
+  unnest_tokens(word, word) %>%
+  filter(!word %in% my_stops)
+
+# Count the frequency of each word
+word_count <- rosenkrantz_clean %>%
+  count(word, sort = TRUE)
+
+# Get the top 20 most frequent words
+top_20_words <- word_count %>%
+  top_n(20, n)
+
+# Print the top 20 most frequent words
+print(top_20_words)
+
+# Create a bar plot of the top 20 words
+ggplot(top_20_words, aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  # Flip coordinates to make the graph horizontal
+  labs(title = "Top 20 Most Frequent Words Rosenkrantz",
+       x = "Words",
+       y = "Frequency") +
+  theme_minimal() +  # Clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
