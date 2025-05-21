@@ -1,0 +1,205 @@
+---
+title: "Wordclouds Beate Bille"
+author: "Laura, Amanda, Sarah, Cecilie"
+date: "2025-05-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud)
+library(here)
+library(pdftools)
+library(lubridate)
+```
+
+
+```{r}
+
+# Has been made with help from chatgpt to combine the files to use thhe function "analyze()"
+library(pdftools)
+
+analyze <- function(file_path) {
+  text <- pdf_text(file_path)
+  if (length(text) >= 2) {
+    cat(text[2])
+  } else {
+    cat("PDF has fewer than 2 pages.\n") #only wishing for the second page on each document
+  }
+}
+```
+
+
+```{r}
+#Follows the guide from software carpentry 
+list.files(path = "data:breve_bille", pattern = "pdf")
+```
+```{r}
+#Follows the guide from software carpentry 
+list.files(path = "data:breve_bille", pattern = "brev_bille", full.names = TRUE)
+```
+```{r}
+#Follows the guide from software carpentry 
+filenames <- list.files(path = "data:breve_bille",  
+                        pattern = "brev_bille-[0-4]{2}.pdf",
+                        full.names = TRUE)
+for (f in filenames) {
+  print(f)
+  analyze(f)
+}
+```
+
+```{r}
+#Combining with tidytext
+analyze <- function(file_path) {
+  text <- pdf_text(file_path)
+  
+  if (length(text) < 2) {
+    return(tibble(file = basename(file_path), word = NA))
+  }
+
+  second_page <- text[2]
+   #For making it so it only uses the second page
+  
+  tibble(file = basename(file_path), text = second_page) %>%
+    unnest_tokens(word, text)
+}
+```
+
+
+```{r}
+filenames <- list.files(path = "data:breve_bille",  
+                        pattern = "brev_bille-[0-4]{2}.pdf",
+                        full.names = TRUE)
+
+# Use lapply to process all files and bind results
+all_words <- lapply(filenames, analyze) %>%
+  bind_rows()
+```
+
+```{r removes stopwords}
+# Made with help from chatgpt to have our stoplist put in 
+
+my_stops <- readLines("stoplist.txt") %>%
+  str_trim() %>%
+  str_to_lower()
+
+my_stops_df <- tibble(word = my_stops)
+
+# Normalize word column and remove stopwords
+all_words_clean <- all_words %>%
+  filter(!is.na(word)) %>%
+  mutate(word = str_to_lower(str_trim(word))) %>%
+  filter(!str_detect(word, "[[:punct:]]")) %>%
+  anti_join(my_stops_df, by = "word")
+
+# Remove numeric words
+all_words_clean_no_numeric <- all_words_clean %>% 
+  filter(!str_detect(word, "^\\d+$"))
+```
+
+
+Wordcloud for Bille
+The following codes is made by Max Odsbjerg Pedersen, but we have modified it for our purposes. 
+```{r Count words}
+
+all_words_clean_no_numeric %>% 
+  count(word) %>% 
+  arrange(-n)
+
+```
+
+Frequence analysis with wordcloud
+```{r}
+
+all_words_clean_no_numeric %>% 
+  count(word, file, sort=TRUE)
+
+```
+
+Before we calculate the frequence of the words, we need R to count how many words there are in each letter. This is done by using the function `group_by` followed by `summarise`:
+```{r}
+
+all_words_clean_no_numeric %>% 
+  count(word,file) %>% 
+  group_by(file) %>% 
+  summarise(total=sum(n))->total_words
+
+```
+
+Then we add the total number of words to our dataframe, which we do with `left_join`:
+```{r}
+
+all_words_clean_no_numeric %>% 
+  count(word, file, sort=TRUE) %>% 
+  left_join(total_words, by="file") ->all_words_clean_no_numeric_count
+
+```
+
+
+```{r}
+
+all_words_clean_no_numeric_count %>% 
+  bind_tf_idf(word,file,n)->all_words_tf_idf
+
+```
+
+We do not see any interesting words, because R lists all the words in an ascending order. Instead, we will ask it to list them in a descending order – highest to lowest tf_idf:
+```{r}
+all_words_tf_idf %>% 
+  arrange(desc(tf_idf))
+
+```
+
+```{r}
+# Has been made with help from chatgpt, to help us making the pdf title into titles of dates
+
+file_years <- c(
+  "brev_bille-01.pdf" = "Letter 1: 1563-10-09",
+  "brev_bille-02.pdf" = "Letter 2: 1573",
+  "brev_bille-03.pdf" = "Letter 3: 1573-08-15",
+  "brev_bille-04.pdf" = "Letter 4: 1574-03-06"
+  )
+
+all_words_tf_idf <- all_words_tf_idf %>%
+  mutate(year = file_years[file])
+```
+
+visualizastion of the wordclouds. Creating a better layout and adding the new names by grouping it as "year". 
+```{r}
+all_words_tf_idf %>%
+  arrange(desc(tf_idf)) %>%
+  mutate(word = factor(word, levels = rev(unique(word)))) %>%
+  group_by(year) %>%
+  slice_max(tf_idf, n = 15, with_ties = FALSE) %>%
+  ggplot(aes(label = word, size = tf_idf, color = tf_idf)) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 10) +
+  theme_minimal() +
+  facet_wrap(~year, ncol = 4, scales = "free") +
+  scale_color_gradient(low = "blue", high = "black") +
+  labs(
+    title = "Beate Bille letters: most unique words per year",
+    subtitle = "Importance determined by term frequency (tf) - inversed document frequency (idf)",
+    caption = "Data from Det Kongelige Bibliotek"
+  )
+```
+
+
+Saving the wordcloud as a png
+```{r}
+ggsave("wordcloudBeateBille.png", width = 20, height = 5,  units = "cm", bg = "white")
+```
+
+
+
+
+
+
+
+
+
